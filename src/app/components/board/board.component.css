@@ -12,36 +12,9 @@ mat-card {
   margin-top: 5%;
 }
 
-.container {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.delete {
-  color: red;
-  border-radius: 7px;
-  border: 1px solid rgb(255, 207, 207);
-}
-
-.list-container {
-  flex-direction: row;
-  justify-content: space-around;
-  margin-top: 2em;
-  display: flex;
-}
-
-.column-container {
-  width: 250px;
-  max-width: 100%;
-  margin: 0 25px 25px 0;
-  display: inline-block;
-  vertical-align: top;
-}
 
 .list {
-  border: 1px solid lightblue;
+  @apply bg-gray-100 min-h-[300px];
 }
 
 
