@@ -40,10 +40,10 @@ export class BoardComponent implements OnInit {
     })
   }
 
-  todo:Array<Task> = [];
-  doing:Array<Task> = [];
-  done:Array<Task> = [];
-  rejected:Array<Task> = [];
+  open:Array<Task> = [];
+  pending:Array<Task> = [];
+  inProgress:Array<Task> = [];
+  completed:Array<Task> = [];
 
   ngOnInit() {
 
@@ -53,35 +53,35 @@ export class BoardComponent implements OnInit {
       'date' : new FormControl()
     })
 
-    let localtodo = localStorage.getItem('todo');
-    if (localtodo) {
-      this.todo = JSON.parse(localtodo);
+    let open = localStorage.getItem('open');
+    if (open) {
+      this.open = JSON.parse(open);
     }
 
-    let localdoing = localStorage.getItem('doing');
-    if (localdoing) {
-      this.doing = JSON.parse(localdoing);
+    let inProgress = localStorage.getItem('inProgress');
+    if (inProgress) {
+      this.inProgress = JSON.parse(inProgress);
     }
 
-    let localdone = localStorage.getItem('done');
-    if (localdone) {
-      this.done = JSON.parse(localdone);
+    let pending = localStorage.getItem('pending');
+    if (pending) {
+      this.pending = JSON.parse(pending);
     }
 
-    let localrejected = localStorage.getItem('rejected');
-    if (localrejected) {
-      this.rejected = JSON.parse(localrejected);
+    let completed = localStorage.getItem('completed');
+    if (completed) {
+      this.completed = JSON.parse(completed);
     }
-    this.taskService.getTasks().then((res)=>console.log('res',res)).catch((e)=> console.log('e',e))
+    // this.taskService.getTasks().then((res)=>console.log('res',res)).catch((e)=> console.log('e',e))
   }
 
   addTask() {
     this.newTaskForm.value.date = new Date()
 
-    this.todo.push(this.newTaskForm.value);
+    this.open.push(this.newTaskForm.value);
 
     this.newTaskForm.reset()
-    localStorage.setItem('todo', JSON.stringify(this.todo));
+    localStorage.setItem('open', JSON.stringify(this.open));
     this.newTaskForm.value.date = new Date();
   }
 
@@ -101,33 +101,33 @@ export class BoardComponent implements OnInit {
       );
     }
 
-    localStorage.setItem('todo', JSON.stringify(this.todo));
-    localStorage.setItem('doing', JSON.stringify(this.doing));
-    localStorage.setItem('done', JSON.stringify(this.done));
-    localStorage.setItem('rejected', JSON.stringify(this.rejected));
+    localStorage.setItem('open', JSON.stringify(this.open));
+    localStorage.setItem('pending', JSON.stringify(this.pending));
+    localStorage.setItem('inProgress', JSON.stringify(this.inProgress));
+    localStorage.setItem('completed', JSON.stringify(this.completed));
   }
 
 
   deleteTask(date:Date, type:String){
     switch (type) {
-      case 'todo':
-        this.todo = this.todo.filter((item) => item.date !== date)
-        localStorage.setItem('todo', JSON.stringify(this.todo));
+      case 'open':
+        this.open = this.open.filter((item) => item.date !== date)
+        localStorage.setItem('open', JSON.stringify(this.open));
         break;
 
-      case 'doing':
-        this.doing = this.doing.filter((item) => item.date !== date)
-        localStorage.setItem('doing', JSON.stringify(this.doing));
+      case 'pending':
+        this.pending = this.pending.filter((item) => item.date !== date)
+        localStorage.setItem('pending', JSON.stringify(this.pending));
         break;
 
-      case 'done':
-        this.done = this.done.filter((item) => item.date !== date)
-        localStorage.setItem('done', JSON.stringify(this.done));
+      case 'inProgress':
+        this.inProgress = this.inProgress.filter((item) => item.date !== date)
+        localStorage.setItem('done', JSON.stringify(this.inProgress));
         break;
 
-      case 'rejected':
-        this.rejected = this.rejected.filter((item) => item.date !== date)
-        localStorage.setItem('rejected', JSON.stringify(this.rejected));
+      case 'completed':
+        this.completed = this.completed.filter((item) => item.date !== date)
+        localStorage.setItem('completed', JSON.stringify(this.completed));
         break;
 
       default:
