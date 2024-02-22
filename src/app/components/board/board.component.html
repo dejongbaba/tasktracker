@@ -1,20 +1,205 @@
-<div class="board max-w-2xl m-auto grid grid-cols-4">
-  <div class="col-span-1">
-    <h2>TODO</h2>
-    <app-card />
-  </div>
-  <div class="col-span-1">
-    <h2>PENDING</h2>
-    <app-card />
+<div class="w-full lg:max-w-4xl m-auto lg:my-4 space-y-4">
+  <nav class="w-full flex  border-b-2 ">
+    <h1 class="font-bold text-3xl">Task Board</h1>
+  </nav>
 
-  </div>
-  <div class="col-span-1">
-    <h2>TODO</h2>
-    <app-card />
 
-  </div>
-  <div class="col-span-1">
-    <h2>COMPLETED</h2>
-    <app-card />
-  </div>
+  <div class="">
+    <h2 class="text-lg font-bold">New Task</h2>
+        <div class="border rounded py-4">
+          <form  class="grid grid-cols-1 lg:grid-cols-3 gap-3 px-3 py-4 items-center" [formGroup]="newTaskForm">
+            <div class="flex flex-col relative">
+              <input required type="text" formControlName="name" placeholder="Title" class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <small
+                *ngIf="!newTaskForm.get('name')?.valid && newTaskForm.get('name')?.touched"
+                class="text-red-400 absolute bottom-12"
+              >*Please add task Title
+              </small>
+            </div>
+            <div class="flex flex-col relative">
+              <input required type="text" formControlName="desc" placeholder="Description" class=" bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500">
+              <small
+                *ngIf="!newTaskForm.get('desc')?.valid && newTaskForm.get('desc')?.touched"
+                class="text-red-400 absolute bottom-12"
+              >
+                *Please add task Description
+              </small>
+            </div>
+            <button type="button"
+                    class=" text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                    [disabled]="!newTaskForm?.valid"
+                    (click)="addTask()"
+            >Add </button>
+          </form>
+
+
+        </div>
+
+      </div>
+
+
+    <div class="grid grid-cols-1 lg:grid-cols-4 gap-4 ">
+      <div class="m-2 bg-gray-100">
+        <div
+          class="p-2 border-0"
+          cdkDropList
+          #todolist="cdkDropList"
+          [cdkDropListData]="todo"
+          [cdkDropListConnectedTo]="[rejectedlist, doinglist, donelist, todolist]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <nav class="border-b flex items-center justify-between px-2 ">
+            <div>ToDo</div>
+            <div>{{ todo.length }}</div>
+          </nav>
+
+          <mat-card class="!p-2 !rounded !border-0 !shadow-lg " cdkDrag *ngFor="let item of todo">
+            <div>
+              <div class="text-right">
+                 <span class="text-red-400 text-lg p-1" (click)="deleteTask(item.date, 'todo')">
+                x
+              </span>
+              </div>
+              <mat-card-title class="!font-bold  !mb-2 ">
+<!--                <p class="text-primary"> Name:</p>-->
+                {{ item?.name }}</mat-card-title>
+              <hr>
+              <mat-card-subtitle class="!font-normal !text-sm !my-2 "
+              >
+<!--                <p class="text-primary"> Description:</p>-->
+                {{ item?.desc }}</mat-card-subtitle
+              >
+            </div>
+            <hr>
+            <div class="text-gray-400 text-xs py-2">
+              Created Date:
+              {{ item?.date | date:"medium":"medium" }}
+            </div>
+          </mat-card>
+
+          <div class="m-3" *ngIf="todo.length === 0">
+            No Pending tasks to do..!!
+          </div>
+        </div>
+      </div>
+
+      <div class=" m-2">
+        <div
+          class="list"
+          cdkDropList
+          #doinglist="cdkDropList"
+          [cdkDropListData]="doing"
+          [cdkDropListConnectedTo]="[rejectedlist, doinglist, donelist, todolist]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <nav class="border-b flex items-center justify-between px-2 ">
+            <div>Doing</div>
+            <div>{{ doing.length }}</div>
+          </nav>
+
+          <mat-card class="!p-2 !rounded !border-0 !shadow-lg " cdkDrag *ngFor="let item of doing">
+            <div>
+              <div class="delete p-1 float-right" (click)="deleteTask(item.date, 'doing')">
+                <span><i class="fa fa-trash"></i></span>
+              </div>
+              <mat-card-title
+              ><p class="text-primary">Task Name:</p>
+                {{ item.name }}</mat-card-title
+              ><hr>
+              <mat-card-subtitle
+              ><p class="text-primary">Task Description:</p>
+                {{ item.desc }}</mat-card-subtitle
+              >
+            </div><hr>
+            <div class="text-muted display-5 font-weight-light">
+              Created Date:
+              {{ item?.date | date:"medium" }}
+            </div>
+          </mat-card>
+          <div class="alert alert-info m-3" *ngIf="doing.length === 0">
+            No Pending tasks in progress..!!
+          </div>
+        </div>
+      </div>
+
+      <div class=" m-2">
+        <div
+          class="list"
+          cdkDropList
+          #donelist="cdkDropList"
+          [cdkDropListData]="done"
+          [cdkDropListConnectedTo]="[rejectedlist, doinglist, donelist, todolist]"
+          (cdkDropListDropped)="drop($event)"
+        >
+          <nav  class="border-b flex items-center justify-between px-2 ">
+            <div>Done</div>
+            <div>{{ done.length }}</div>
+          </nav>
+
+          <mat-card class="!p-2 !rounded !border-0 !shadow-lg " cdkDrag *ngFor="let item of done">
+            <div>
+              <div class="delete p-1 float-right" (click)="deleteTask(item.date, 'done')">
+                <span><i class="fa fa-trash"></i></span>
+              </div>
+              <mat-card-title
+              ><p class="text-primary">Task Name:</p>
+                {{ item.name }}</mat-card-title
+              ><hr>
+              <mat-card-subtitle
+              ><p class="text-primary">Task Description:</p>
+                {{ item.desc }}</mat-card-subtitle
+              >
+            </div><hr>
+            <div class="text-muted display-5 font-weight-light">
+              Created Date:
+              {{ item?.date | date:"medium"}}
+            </div>
+          </mat-card>
+          <div class="alert alert-info m-3" *ngIf="done.length === 0">
+            You have completed all the tasks..!!
+          </div>
+        </div>
+      </div>
+
+      <div class="m-2">
+        <div
+          class="list"
+          cdkDropList
+          #rejectedlist="cdkDropList"
+          [cdkDropListData]="rejected"
+          [cdkDropListConnectedTo]="[rejectedlist, doinglist, donelist, todolist]"
+          (cdkDropListDropped)="drop($event)"
+        >
+
+          <nav  class="border-b flex items-center justify-between px-2 ">
+            <div>Rejected</div>
+            <div>{{ rejected.length }}</div>
+          </nav>
+
+          <mat-card class="!p-2 !rounded !border-0 !shadow-lg " cdkDrag *ngFor="let item of rejected">
+            <div>
+              <div class="delete p-1 float-right" (click)="deleteTask(item.date, 'rejected')">
+                <span><i class="fa fa-trash"></i></span>
+              </div>
+              <mat-card-title
+              ><p class="text-primary">Task Name:</p>
+                {{ item.name }}</mat-card-title
+              ><hr>
+              <mat-card-subtitle
+              ><p class="text-primary">Task Description:</p>
+                {{ item.desc }}</mat-card-subtitle
+              >
+            </div><hr>
+            <div class="text-muted display-5 font-weight-light">
+              Created Date:
+              {{ item?.date | date:"medium"}}
+            </div>
+          </mat-card>
+          <div class="alert alert-info m-3" *ngIf="rejected.length === 0">
+            No tasks rejected..!!
+          </div>
+        </div>
+      </div>
+    </div>
 </div>
+
